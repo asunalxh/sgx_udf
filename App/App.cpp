@@ -52,12 +52,12 @@
 
 string encode_key;
 int eid = 1;
-char keyfilename[30] = "keyfile.txt";
-char statefilename[30] = "statefilterfile.txt";
+char *keyfilename = "/home/asunalxh/library/keyfile.txt";
+char *statefilename = "/home/asunalxh/library/statefilterfile.txt";
 
 extern "C"
 {
-    char *myinsert(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error);
+    char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
 
@@ -588,19 +588,18 @@ bool init()
     return true;
 }
 
-char temp[RAND_LEN];
 
-char *myinsert(UDF_INIT *initid, UDF_ARGS *args, char *is_null, char *error)
+char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error)
 {
+    init();
     string ans = insertData((char *)args->args[0], (char *)args->args[1]);
-    memcpy(temp, ans.c_str(), ans.length() + 1);
-    return temp;
+    strcpy(result,ans.c_str());
+    *length = ans.length();
+    return result;
 }
 
 my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
-    memset(temp,0,sizeof(temp));
-    initid->max_length = RAND_LEN;
     return 0;
 }
 

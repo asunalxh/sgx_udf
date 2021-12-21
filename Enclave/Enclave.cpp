@@ -337,22 +337,16 @@ uint32_t get_sealed_state_size()
     stateString = "";
     const std::string splitChar = "|";
 
-    //    printf("max size %d\n", stateString.max_size());
-
     //bloomFilter
     stateString += myBloomFilter->toString();
     stateString += splitChar;
 
-    //    printf("storage ST start\n");
     //ST
     for (auto i = ST.begin(); i != ST.end(); i++)
     {
-        //        printf("ST %s\n",i->first.c_str());
         stateString += i->first + ":" + to_string(i->second) + ";";
-        //        printf("storage ST %s\n",(i->first + ":" + to_string(i->second) + ";").c_str());
     }
     stateString += splitChar;
-    //    printf(" stateString %s\n",stateString.c_str());
 
     //M_c;
     for (auto i = M_c.begin(); i != M_c.end(); i++)
@@ -370,9 +364,6 @@ uint32_t get_sealed_state_size()
         stateString += s + ";";
     }
     stateString += splitChar;
-    //    printf("string5 %c\n",stateString[stateString.length()-1]);
-
-    //    stateString = "hello World";
 
     return get_sealed_data_size(stateString.c_str());
 }
