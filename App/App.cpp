@@ -52,30 +52,22 @@
 
 string encode_key;
 int eid = 1;
-char *keyfilename = "/home/ubuntu/library/keyfile.txt";
-char *statefilename = "/home/ubuntu/library/statefilterfile.txt";
+char *keyfilename = "keyfile.txt";
+char *statefilename = "statefilterfile.txt";
 
 unordered_map<string, string> M;
 vector<string> ansList;
 
 extern "C"
 {
+    char* myinit(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
-    long long mytest(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
-    my_bool mytest_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
-long long test_temp = 0;
 
-long long mytest(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
-    test_temp ++;
-    return test_temp;
-}
-my_bool mytest_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
-    return 0;
-}
 
 /* Global EID shared by multiple threads */
 
@@ -471,6 +463,7 @@ string insertData(char *id, char *P_BRAND)
     return Enc(encode_key, RndPt(P_BRAND));
 }
 
+
 void searchData(string word)
 {
     /* Initialize the enclave */
@@ -595,10 +588,20 @@ bool init()
     return true;
 }
 
+char* myinit(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    string ans = init() ? M.clear(), "初始化成功" : "初始化失败";
+    strcpy(result,ans.c_str());
+    *length = ans.length();
+    return result;
+}
+my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
+}
+
 
 char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error)
 {
-    init();
+    // init();
     string ans = insertData((char *)args->args[0], (char *)args->args[1]);
     strcpy(result,ans.c_str());
     *length = ans.length();
@@ -611,32 +614,23 @@ my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 }
 
 char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    ansList.clear();
+    char* P_BRAND = (char*) args->args[0];
+    searchData(P_BRAND);
+    string ans="";
+    for(string x : ansList){
+        ans = ans + " " + x;
+    }
+    strcpy(result,ans.c_str());
+    *length = ans.length();
     return result;
 }
 my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
 }
 
-/* Application entry */
 int SGX_CDECL
-
 main(int argc, char *argv[])
 {
-    init();
-    cout << "初始化成功\n";
-    char *id = "1";
-    char *P_BRAND = "Brand#13";
-    insertData("1","brand#13");
-    insertData("2","brand#13");
-    insertData("3","brand#42");
-    insertData("4","brand#34");
-    insertData("5","brand#32");
-    insertData("6","brand#24");
-    insertData("7","brand#11");
-    insertData("8","brand#44");
-    insertData("9","brand#43");
-    insertData("10","brand#13");
-    cout << "添加成功\n";
-    cout << "开始查找\n";
-    searchData("brand#13");
+
 }

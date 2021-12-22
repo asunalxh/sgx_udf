@@ -150,8 +150,6 @@ vector<string> splitBy(string str, char c)
 /*** setup */
 void ecall_init()
 {
-    //    printf("start to init\n");
-
     //随机生成函数
     uint8_t _KW[ENC_KEY_SIZE];
     sgx_read_rand(_KW, ENC_KEY_SIZE);
@@ -173,7 +171,6 @@ void ecall_init()
     //reset M_c
     M_c.clear();
     //M_c.reserve(22000000);
-    //printf("Max size of M_c %d\n", M_c.max_size());
 }
 
 void ecall_add(char *id_data, char *valuesPointer, char *u_arr, char *v_arr, size_t out_size)
@@ -278,8 +275,9 @@ void ecall_search(char *word)
     {
 
         int limit = BATCH_SIZE * (i + 1) > pair_no ? pair_no : BATCH_SIZE * (i + 1);
-
         int length = BATCH_SIZE * (i + 1) > pair_no ? pair_no - BATCH_SIZE * i : BATCH_SIZE;
+
+        // printf("batch=%d limit=%d length=%d",batch,limit,length);
 
         DataStruct *Q_w_u_arr = new DataStruct[length];
         DataStruct *Q_w_id_arr = new DataStruct[length];
@@ -297,8 +295,8 @@ void ecall_search(char *word)
         }
         ocall_search(Q_w_u_arr, Q_w_id_arr, length, sizeof(DataStruct));
 
-        delete[] Q_w_id_arr;
-        delete[] Q_w_id_arr;
+        // delete[] Q_w_id_arr;
+        // delete[] Q_w_id_arr;
     }
 }
 
@@ -438,8 +436,6 @@ sgx_status_t unseal_data(const uint8_t *sealed_blob, size_t data_size, char *out
         decrypt_data,
         &size);
 
-    //    printf("unsealed message : %s\n",decrypt_data);
-    //    parseStat((char*)decrypt_data);
 
     if (ret != SGX_SUCCESS)
     {
