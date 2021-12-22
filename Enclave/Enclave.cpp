@@ -204,7 +204,7 @@ void ecall_add(char *id_data, char *valuesPointer, char *u_arr, char *v_arr, siz
     string v = Enc(k_id, id);
 
     memcpy(u_arr, u.c_str(), u.length() + 1);
-    // memcpy(v_arr, v.c_str(), v.length() + 1);
+    memcpy(v_arr, v.c_str(), v.length() + 1);
 
     string c_key = H(k_w, id);
     M_c[c_key] = c;
@@ -234,7 +234,7 @@ void ecall_del(char *id_str, size_t id_len)
     delete[] v_arr;
 }
 
-void ecall_search(char *word, size_t id_len)
+void ecall_search(char *word)
 {
     string keyword = word;
 

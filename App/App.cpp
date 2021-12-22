@@ -59,6 +59,8 @@ extern "C"
 {
     char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
 
 /* Global EID shared by multiple threads */
@@ -217,27 +219,20 @@ bool read_file_to_buf(char *filename, uint8_t *buf, size_t bsize)
 }
 
 unordered_map<string, string> M;
+vector<string> ansList;
 
 void ocall_search(void *w_u_arr_pointer, void *w_id_arr_pointer, size_t count, size_t size)
 {
-    // DataStruct *w_u_arr = (DataStruct *)w_u_arr_pointer;
-    // DataStruct *w_id_arr = (DataStruct *)w_id_arr_pointer;
-    // for (int i = 0; i < count; i++)
-    // {
-    //     //        cout << w_u_arr[i].content << ' ' << w_id_arr[i].content << endl;
-    //     string id = Dec(w_id_arr[i].content, M[w_u_arr[i].content]);
-    //     cout << "result " << id << endl;
-    //     Tuple t = GetValue(id);
-
-    //     //cout << t.id << '\t' << t.P_NAME << '\t' << t.P_MFGR << '\t' << t.P_BRAND << '\t' << t.P_TYPE << endl;
-
-    //     t.P_BRAND = Dec(encode_key, RndPt(t.P_BRAND));
-    //     t.P_MFGR = Dec(encode_key, RndPt(t.P_MFGR));
-    //     t.P_NAME = Dec(encode_key, RndPt(t.P_NAME));
-    //     t.P_TYPE = Dec(encode_key, RndPt(t.P_TYPE));
-
-    //     cout << t.id << '\t' << t.P_NAME << '\t' << t.P_MFGR << '\t' << t.P_BRAND << '\t' << t.P_TYPE << endl;
-    // }
+    DataStruct *w_u_arr = (DataStruct *)w_u_arr_pointer;
+    DataStruct *w_id_arr = (DataStruct *)w_id_arr_pointer;
+    cout << "count " << count << endl;
+    for (int i = 0; i < count; i++)
+    {
+        cout << w_u_arr[i].content << ' ' << w_id_arr[i].content << endl;
+        string id = Dec(w_id_arr[i].content, M[w_u_arr[i].content]);
+        cout << "result " << id << endl;
+        ansList.push_back(id);
+    }
 }
 
 bool seal_state(sgx_enclave_id_t eid_unseal)
@@ -478,7 +473,7 @@ void searchData(string word)
 
     char *id = new char[RAND_LEN];
     strcpy(id, word.c_str());
-    ecall_search(eid_unseal, id, RAND_LEN);
+    ecall_search(eid_unseal, id);
     delete[] id;
     seal_state(eid_unseal);
 
@@ -603,6 +598,13 @@ my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
     return 0;
 }
 
+char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    return result;
+}
+my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
+}
+
 /* Application entry */
 int SGX_CDECL
 
@@ -612,7 +614,22 @@ main(int argc, char *argv[])
     cout << "初始化成功\n";
     char *id = "1";
     char *P_BRAND = "Brand#13";
-    insertData(id, P_BRAND);
+    insertData("1","brand#13");
+    insertData("2","brand#13");
+    insertData("3","brand#42");
+    insertData("4","brand#34");
+    insertData("5","brand#32");
+    insertData("6","brand#24");
+    insertData("7","brand#11");
+    insertData("8","brand#44");
+    insertData("9","brand#43");
+    insertData("10","brand#13");
+    cout << "添加成功\n";
+    cout << "开始查找\n";
+    searchData("brand#13");
+    
+
+    
 
     // Tuple t{"1", "goldenrod lavender spring chocolate lace", "Manufacturer",
     //         "Brand#13", "PROMO BURNISHED COPPER"};

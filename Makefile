@@ -36,8 +36,8 @@ SGX_MODE ?= SIM
 SGX_ARCH ?= x64
 SGX_DEBUG ?= 1
 
-App_Name := app.so
-My_Link_Flags := -shared
+App_Name := app
+My_Link_Flags :=
 
 ifeq ($(shell getconf LONG_BIT), 32)
 	SGX_ARCH := x86
