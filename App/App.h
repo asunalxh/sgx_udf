@@ -62,7 +62,7 @@ using namespace std;
 #endif
 
 #define TOKEN_FILENAME "enclave.token"
-#define ENCLAVE_FILENAME "/usr/lib/enclave.signed.so"
+#define ENCLAVE_FILENAME "enclave.signed.so"
 
 #if defined(__cplusplus)
 extern "C"

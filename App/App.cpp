@@ -52,8 +52,11 @@
 
 string encode_key;
 int eid = 1;
-char *keyfilename = "/home/asunalxh/library/keyfile.txt";
-char *statefilename = "/home/asunalxh/library/statefilterfile.txt";
+char *keyfilename = "/home/ubuntu/library/keyfile.txt";
+char *statefilename = "/home/ubuntu/library/statefilterfile.txt";
+
+unordered_map<string, string> M;
+vector<string> ansList;
 
 extern "C"
 {
@@ -61,6 +64,17 @@ extern "C"
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    long long mytest(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
+    my_bool mytest_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+}
+long long test_temp = 0;
+
+long long mytest(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
+    test_temp ++;
+    return test_temp;
+}
+my_bool mytest_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
 }
 
 /* Global EID shared by multiple threads */
@@ -218,8 +232,6 @@ bool read_file_to_buf(char *filename, uint8_t *buf, size_t bsize)
     return true;
 }
 
-unordered_map<string, string> M;
-vector<string> ansList;
 
 void ocall_search(void *w_u_arr_pointer, void *w_id_arr_pointer, size_t count, size_t size)
 {
@@ -627,42 +639,4 @@ main(int argc, char *argv[])
     cout << "添加成功\n";
     cout << "开始查找\n";
     searchData("brand#13");
-    
-
-    
-
-    // Tuple t{"1", "goldenrod lavender spring chocolate lace", "Manufacturer",
-    //         "Brand#13", "PROMO BURNISHED COPPER"};
-    // long long ans = insertValue(t);
-    // printf("returns %ld", ans);
-    // (void)(argc);
-    // (void)(argv);
-
-    // init();
-
-    // vector<Tuple> list = GetValues(1, 100);
-    // cout << list.size() << endl
-    //      << endl;
-
-    // for (Tuple t : list)
-    // {
-    //     cout << t.id << '\t' << t.P_NAME << '\t' << t.P_MFGR << '\t' << t.P_BRAND << '\t' << t.P_TYPE << endl;
-    //     insertData(t);
-    // }
-
-    // printf("删除了测试数据1\n");
-
-    // while (true)
-    // {
-    //     cout << "请输入查询单词：";
-    //     string word;
-    //     cin >> word;
-    //     searchData(word);
-    // }
-
-    // printf("Info: SampleEnclave successfully returned.\n");
-
-    // printf("Enter a character before exit ...\n");
-    // getchar();
-    // return 0;
 }

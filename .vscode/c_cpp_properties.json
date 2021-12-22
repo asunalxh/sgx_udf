@@ -5,8 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${SGX_SDK}/include/**",
-                "/opt/lampp/include/server/**",
-                "${workspaceFolder}/Include"
+                "/opt/lampp/include/server/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
