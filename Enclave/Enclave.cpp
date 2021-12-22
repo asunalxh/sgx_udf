@@ -173,7 +173,7 @@ void ecall_init()
     //M_c.reserve(22000000);
 }
 
-void ecall_add(char *id_data, char *valuesPointer, char *u_arr, char *v_arr, size_t out_size)
+void ecall_add(char *id_data, char *valuesPointer)
 {
     string id = id_data;
     string attribute = valuesPointer;
@@ -200,14 +200,19 @@ void ecall_add(char *id_data, char *valuesPointer, char *u_arr, char *v_arr, siz
     string u = H(k_w, c_str);
     string v = Enc(k_id, id);
 
-    memcpy(u_arr, u.c_str(), u.length() + 1);
-    memcpy(v_arr, v.c_str(), v.length() + 1);
+    DataStruct* u_arr = new DataStruct[1];
+    DataStruct* v_arr = new DataStruct[1];
+
+    memcpy(u_arr[0].content, u.c_str(), u.length() + 1);
+    memcpy(v_arr[0].content, v.c_str(), v.length() + 1);
 
     string c_key = H(k_w, id);
     M_c[c_key] = c;
 
     string k_bf = k_w + id;
     myBloomFilter->add(H(K_BF, k_bf));
+
+    ocall_add(u_arr, v_arr, 1, sizeof(DataStruct));
 }
 
 void ecall_del(char *id_str, size_t id_len)

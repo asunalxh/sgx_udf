@@ -45,7 +45,7 @@ enclave {
     trusted {
        /* define ECALLs here. */
         public void ecall_init();
-        public void ecall_add([in,string]char* id_data,[in,string]char* valuesPointer, [out,size=out_size]char* u_arr, [out,size=out_size]char* v_arr,size_t out_size);
+        public void ecall_add([in,string]char* id_data,[in,string]char* valuesPointer);
         public void ecall_del([in,size=id_len]char* id_str, size_t id_len);
         public void ecall_search([in,string]char* id_str);
 
@@ -67,6 +67,7 @@ enclave {
      */
     untrusted {
         void ocall_print_string([in, string] const char *str);
+        void ocall_add([in,size=size,count=count]void* u_arr,[in,size=size,count=count] void* v_arr,size_t count,size_t size);
         void ocall_search([in,size=size,count=count]void* w_u_arr,[in,size=size,count=count] void* w_id_arr, size_t count, size_t size);    
     };
 

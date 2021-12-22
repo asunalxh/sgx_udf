@@ -225,6 +225,15 @@ bool read_file_to_buf(char *filename, uint8_t *buf, size_t bsize)
 }
 
 
+void ocall_add(void *u_arr_pointer, void *v_arr_pointer, size_t count, size_t size) {
+    DataStruct *u_arr = (DataStruct *) u_arr_pointer;
+    DataStruct *v_arr = (DataStruct *) v_arr_pointer;
+    for (int i = 0; i < count; i++) {
+        M[u_arr[i].content] = v_arr[i].content;
+        //cout << u_arr[i].content << ' ' << u_arr[i].content << endl;
+    }
+}
+
 void ocall_search(void *w_u_arr_pointer, void *w_id_arr_pointer, size_t count, size_t size)
 {
     DataStruct *w_u_arr = (DataStruct *)w_u_arr_pointer;
@@ -447,15 +456,7 @@ string insertData(char *id, char *P_BRAND)
 
     getKey(eid_unseal);
 
-    char *u_arr = new char[RAND_LEN];
-    char *v_arr = new char[RAND_LEN];
-
-    ecall_add(eid_unseal, id, P_BRAND, u_arr, v_arr, RAND_LEN);
-
-    M[u_arr] = v_arr;
-
-    delete[] u_arr;
-    delete[] v_arr;
+    ecall_add(eid_unseal, id, P_BRAND);
 
     seal_state(eid_unseal);
     sgx_destroy_enclave(eid_unseal);
@@ -632,5 +633,12 @@ my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 int SGX_CDECL
 main(int argc, char *argv[])
 {
-
+    init();
+    insertData("1","brand#13");
+    insertData("2","brand#13");
+    cout << "插入成功\n";
+    searchData("brand#13");
+    for(string x : ansList){
+        cout << x << ' ';
+    }
 }
