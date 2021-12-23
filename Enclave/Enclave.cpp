@@ -215,7 +215,7 @@ void ecall_add(char *id_data, char *valuesPointer)
     ocall_add(u_arr, v_arr, 1, sizeof(DataStruct));
 }
 
-void ecall_del(char *id_str, size_t id_len)
+void ecall_del(char *id_str)
 {
     string id = id_str;
     D.push_back(id);
@@ -230,7 +230,7 @@ void ecall_del(char *id_str, size_t id_len)
         sgx_read_rand((uint8_t *)u_arr[i].content, RAND_LEN);
         sgx_read_rand((uint8_t *)v_arr[i].content, RAND_LEN);
     }
-    // ocall_add(u_arr, v_arr, random_len, sizeof(DataStruct));
+    ocall_add(u_arr, v_arr, random_len, sizeof(DataStruct));
 
     delete[] u_arr;
     delete[] v_arr;

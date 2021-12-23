@@ -66,6 +66,8 @@ extern "C"
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
 
 
@@ -465,7 +467,7 @@ string insertData(char *id, char *P_BRAND)
 }
 
 
-void searchData(string word)
+void searchData(char* id)
 {
     /* Initialize the enclave */
     sgx_enclave_id_t eid_unseal = eid++;
@@ -477,17 +479,17 @@ void searchData(string word)
 
     getKey(eid_unseal);
 
-    char *id = new char[RAND_LEN];
-    strcpy(id, word.c_str());
+    // char *id = new char[RAND_LEN];
+    // strcpy(id, word.c_str());
     ecall_search(eid_unseal, id);
-    delete[] id;
+    // delete[] id;
     seal_state(eid_unseal);
 
     //    free_all(eid_unseal);
     sgx_destroy_enclave(eid_unseal);
 }
 
-void delData(string word)
+void delData(char* id)
 {
     /* Initialize the enclave */
     sgx_enclave_id_t eid_unseal = eid++;
@@ -497,10 +499,10 @@ void delData(string word)
 
     unseal_state(eid_unseal);
 
-    char *id = new char[RAND_LEN];
-    strcpy(id, word.c_str());
-    ecall_del(eid_unseal, id, RAND_LEN);
-    delete[] id;
+    // char *id = new char[RAND_LEN];
+    // strcpy(id, word.c_str());
+    ecall_del(eid_unseal, id);
+    // delete[] id;
 
     seal_state(eid_unseal);
 
@@ -596,6 +598,17 @@ char* myinit(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *
     return result;
 }
 my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
+}
+
+char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    char* id= (char* )args->args[0];
+    delData(id);
+    strcpy(result,id);
+    *length = strlen(id);
+    return result;
+}
+my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
 }
 

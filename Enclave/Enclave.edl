@@ -46,7 +46,7 @@ enclave {
        /* define ECALLs here. */
         public void ecall_init();
         public void ecall_add([in,string]char* id_data,[in,string]char* valuesPointer);
-        public void ecall_del([in,size=id_len]char* id_str, size_t id_len);
+        public void ecall_del([in,string]char* id_str);
         public void ecall_search([in,string]char* id_str);
 
         public uint32_t get_sealed_data_size([in, string]const char *encrypt_data);
