@@ -15,7 +15,7 @@ string Dec(string key, string meg) ;
 //随机加密
 string RndPt(const string &pt);
 //按照空格分割
-vector<string> splitBySpace(string str) ;
+vector<string> splitBy(string str,char x) ;
 
 
 #endif //SAMPLEENCLAVE_UTIL_H

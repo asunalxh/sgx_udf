@@ -128,12 +128,11 @@ string RndPt(const string &pt) {
     return res;
 }
 
-//按照空格分割
-vector<string> splitBySpace(string str) {
+vector<string> splitBy(string str,char x) {
     vector<string> ans;
     string temp;
     for (int i = 0; i < str.length(); i++) {
-        if (str[i] == ' ') {
+        if (str[i] == x) {
             if (temp.length() > 0) {
                 ans.push_back(temp);
                 temp = "";

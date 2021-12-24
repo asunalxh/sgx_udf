@@ -57,6 +57,7 @@ char *statefilename = "statefilterfile.txt";
 
 unordered_map<string, string> M;
 vector<string> ansList;
+vector<vector<string>> vals;
 
 extern "C"
 {
@@ -68,6 +69,11 @@ extern "C"
     my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+
+    char* readdata(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool readdata_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
 
 
@@ -654,4 +660,48 @@ main(int argc, char *argv[])
     for(string x : ansList){
         cout << x << ' ';
     }
+}
+
+char* readdata(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    vals.clear();
+    char* address = args->args[0];
+    ifstream in(address,ios::in);
+
+    if(!in){
+        char* meg = "打开文件时失败";
+        strcpy(result,meg);
+        *length = strlen(meg);
+        return result;
+    }
+
+    string str;
+    while(getline(in,str)){
+        vector<string> fields = splitBy(str,',');
+        vals.push_back(fields);
+    }
+
+    char* meg = "已读取所有数据";
+    strcpy(result,meg);
+    *length = strlen(meg);
+    return result;
+}
+
+my_bool readdata_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
+}
+
+char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    int i = *((long long*) args->args[0]);
+    int j = *((long long*) args->args[0]);
+
+    i --;
+    j --;
+    string val = vals[i][j];
+    strcpy(result,val.c_str());
+    *length = val.length();
+    return result;
+}
+
+my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
 }
