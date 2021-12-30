@@ -238,7 +238,7 @@ void ocall_add(void *u_arr_pointer, void *v_arr_pointer, size_t count, size_t si
     DataStruct *v_arr = (DataStruct *) v_arr_pointer;
     for (int i = 0; i < count; i++) {
         M[u_arr[i].content] = v_arr[i].content;
-        //cout << u_arr[i].content << ' ' << u_arr[i].content << endl;
+        // cout << u_arr[i].content << ' ' << u_arr[i].content << endl;
     }
 }
 
@@ -598,6 +598,7 @@ bool init()
 }
 
 char* myinit(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+    M.clear();
     string ans = init() ? M.clear(), "初始化成功" : "初始化失败";
     strcpy(result,ans.c_str());
     *length = ans.length();
@@ -649,18 +650,7 @@ my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
 }
 
-int SGX_CDECL
-main(int argc, char *argv[])
-{
-    init();
-    insertData("1","brand#13");
-    insertData("2","brand#13");
-    cout << "插入成功\n";
-    searchData("brand#13");
-    for(string x : ansList){
-        cout << x << ' ';
-    }
-}
+
 
 char* readdata(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
     vals.clear();
@@ -692,10 +682,8 @@ my_bool readdata_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 
 char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
     int i = *((long long*) args->args[0]);
-    int j = *((long long*) args->args[0]);
+    int j = *((long long*) args->args[1]);
 
-    i --;
-    j --;
     string val = vals[i][j];
     strcpy(result,val.c_str());
     *length = val.length();
@@ -704,4 +692,10 @@ char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *
 
 my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
+}
+
+
+int SGX_CDECL
+main(int argc, char *argv[])
+{
 }
