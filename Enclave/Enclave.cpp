@@ -212,6 +212,7 @@ void ecall_add(char *id_data, char *valuesPointer)
     string k_bf = k_w + id;
     myBloomFilter->add(H(K_BF, k_bf));
 
+
     ocall_add(u_arr, v_arr, 1, sizeof(DataStruct));
 }
 
@@ -368,12 +369,14 @@ uint32_t get_sealed_state_size()
     }
     stateString += splitChar;
 
+    // printf("%s\n",stateString.c_str());
+
     return get_sealed_data_size(stateString.c_str());
 }
 
 void parseStat(std::string str)
 {
-    //    printf("%s\n",str.c_str());
+    // printf("%s\n",str.c_str());
     std::vector<std::string> list = splitBy(str, '|');
 
     //    printf("parse number %d\n", list.size());

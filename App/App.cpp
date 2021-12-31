@@ -35,6 +35,7 @@
 
 #include <unistd.h>
 #include <pwd.h>
+#include <cstring>
 
 #define MAX_PATH FILENAME_MAX
 
@@ -74,6 +75,17 @@ extern "C"
     my_bool readdata_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+
+    long long testdel(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
+    my_bool testdel_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+}
+
+long long testdel(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
+    long long num = *((long long *)args->args[0]);
+    return num;
+}
+my_bool testdel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
 }
 
 
@@ -467,6 +479,7 @@ string insertData(char *id, char *P_BRAND)
     ecall_add(eid_unseal, id, P_BRAND);
 
     seal_state(eid_unseal);
+
     sgx_destroy_enclave(eid_unseal);
 
     return Enc(encode_key, RndPt(P_BRAND));
@@ -598,7 +611,7 @@ bool init()
 }
 
 char* myinit(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
-    M.clear();
+    M.clear(); 
     string ans = init() ? M.clear(), "初始化成功" : "初始化失败";
     strcpy(result,ans.c_str());
     *length = ans.length();
@@ -609,10 +622,18 @@ my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 }
 
 char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
-    char* id= (char* )args->args[0];
+    int id_int= *((long long* )args->args[0]);
+    string id_str = to_string(id_int);
+    char* id = new char[id_str.length() + 1];
+    strcpy(id,id_str.c_str());
+
+    //char* id= (char* )args->args[0];
     delData(id);
     strcpy(result,id);
     *length = strlen(id);
+
+    delete id;
+
     return result;
 }
 my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
@@ -622,10 +643,18 @@ my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 
 char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error)
 {
-    // init();
-    string ans = insertData((char *)args->args[0], (char *)args->args[1]);
+    int id_int= *((long long* )args->args[0]);
+    string id_str = to_string(id_int);
+    char* id = new char[id_str.length() + 1];
+    strcpy(id,id_str.c_str());
+
+    char * val = (char *)args->args[1];
+    string ans = insertData(id, val);
     strcpy(result,ans.c_str());
     *length = ans.length();
+
+    delete id;
+
     return result;
 }
 
@@ -698,4 +727,28 @@ my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 int SGX_CDECL
 main(int argc, char *argv[])
 {
+    init();
+    vals.clear();
+    ifstream in("PART.csv",ios::in);
+
+    string str;
+    while(getline(in,str)){
+        vector<string> fields = splitBy(str,',');
+        vals.push_back(fields);
+    }
+
+    for(int i = 0 ; i < 5000;i ++){
+        string id_str  = vals[i][0];
+        string val_str = vals[i][1];
+
+        cout << id_str << ' ' << val_str << endl;
+
+        char* id = new char[id_str.length() + 1];
+        strcpy(id,id_str.c_str());
+
+        char* val = new char[val_str.length() + 1];
+        strcpy(val,val_str.c_str());
+
+        insertData(id,val);
+    }
 }

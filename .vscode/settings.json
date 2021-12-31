@@ -25,6 +25,8 @@
         "string": "cpp",
         "__locale": "cpp",
         "locale": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "cstring": "cpp",
+        "fstream": "cpp"
     }
 }
