@@ -622,12 +622,12 @@ my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 }
 
 char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
-    int id_int= *((long long* )args->args[0]);
-    string id_str = to_string(id_int);
-    char* id = new char[id_str.length() + 1];
-    strcpy(id,id_str.c_str());
+    // int id_int= *((long long* )args->args[0]);
+    // string id_str = to_string(id_int);
+    // char* id = new char[id_str.length() + 1];
+    // strcpy(id,id_str.c_str());
 
-    //char* id= (char* )args->args[0];
+    char* id= (char* )args->args[0];
     delData(id);
     strcpy(result,id);
     *length = strlen(id);
@@ -643,11 +643,12 @@ my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
 
 char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error)
 {
-    int id_int= *((long long* )args->args[0]);
-    string id_str = to_string(id_int);
-    char* id = new char[id_str.length() + 1];
-    strcpy(id,id_str.c_str());
+    // int id_int= *((long long* )args->args[0]);
+    // string id_str = to_string(id_int);
+    // char* id = new char[id_str.length() + 1];
+    // strcpy(id,id_str.c_str());
 
+    char* id = (char*)args->args[0];
     char * val = (char *)args->args[1];
     string ans = insertData(id, val);
     strcpy(result,ans.c_str());
@@ -752,3 +753,6 @@ main(int argc, char *argv[])
         insertData(id,val);
     }
 }
+
+//sudo cp app.so /opt/lampp/lib/mysql/plugin/
+//sudo cp enclave.signed.so /usr/lib

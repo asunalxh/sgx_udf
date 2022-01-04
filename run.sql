@@ -51,6 +51,7 @@ begin
     declare id varchar(128);
     declare val varchar(128);
     declare temp varchar(128);
+    declare mid varchar(128);
     declare ans int;
 
     set start_time = unix_timestamp(now());
@@ -59,8 +60,9 @@ begin
     set temp = readdata("/home/asunalxh/VSCode/sgx_udf/PART.csv") ;
 
     set i = 0;
-    while (i < 10000) do
+    while (i < 500) do
         set mid = getval(i,0);
+        set temp = mydel(mid);
 
         delete from Ciphertext where id = mid;
         
@@ -72,34 +74,34 @@ begin
     select ans;
 end;//
 
-delimiter //
-create procedure run_search()
-begin
-    declare i int default 0;
-    declare start_time int;
-    declare end_time int;
-    declare id varchar(128);
-    declare val varchar(128);
-    declare temp varchar(128);
-    declare ans int;
+-- delimiter //
+-- create procedure run_search()
+-- begin
+--     declare i int default 0;
+--     declare start_time int;
+--     declare end_time int;
+--     declare id varchar(128);
+--     declare val varchar(128);
+--     declare temp varchar(128);
+--     declare ans int;
 
-    set start_time = unix_timestamp(now());
+--     set start_time = unix_timestamp(now());
 
-    -- 读取需要搜索的key的文件（一列关键字即可）
-    set temp = readdata("/home/asunalxh/VSCode/sgx_udf/PART.csv") ;
+--     -- 读取需要搜索的key的文件（一列关键字即可）
+--     set temp = readdata("/home/asunalxh/VSCode/sgx_udf/PART.csv") ;
 
-    set i = 0;
-    while (i < 10000) do
-        set mkey = getval(i,0);
+--     set i = 0;
+--     while (i < 500) do
+--         set mkey = getval(i,0);
 
-        set temp = select mysearch(mkey);
+--         set temp = select mysearch(mkey);
         
-        set i = i + 1; 
-        end while;
+--         set i = i + 1; 
+--         end while;
     
-    set end_time = unix_timestamp(now());
-    set ans = end_time - start_time;
-    select ans;
-end;//
+--     set end_time = unix_timestamp(now());
+--     set ans = end_time - start_time;
+--     select ans;
+-- end;//
 
 
