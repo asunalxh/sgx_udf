@@ -630,9 +630,9 @@ char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *i
     char* id= (char* )args->args[0];
     delData(id);
     strcpy(result,id);
-    *length = strlen(id);
+    *length = strlen(id) + 1;
 
-    delete id;
+    // delete id;
 
     return result;
 }
@@ -649,12 +649,12 @@ char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char
     // strcpy(id,id_str.c_str());
 
     char* id = (char*)args->args[0];
-    char * val = (char *)args->args[1];
-    string ans = insertData(id, val);
+    char *val = (char*)args->args[1];
+    string ans = insertData(id,val);
     strcpy(result,ans.c_str());
     *length = ans.length();
 
-    delete id;
+    // delete id;
 
     return result;
 }
