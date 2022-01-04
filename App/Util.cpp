@@ -135,12 +135,12 @@ vector<string> splitBy(string str,char x) {
         if (str[i] == x) {
             if (temp.length() > 0) {
                 ans.push_back(temp);
-                temp = "";
+                temp.clear();
             }
-        } else
+        } else if (str[i] != '\n' && str[i] != ' ' && str[i] != '\r')
             temp += str[i];
     }
-    if (temp.length() > 0) {
+    if (!temp.empty()) {
         ans.push_back(temp);
     }
     return ans;

@@ -76,15 +76,15 @@ extern "C"
     char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
-    long long testdel(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
-    my_bool testdel_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    long long test(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
+    my_bool test_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 }
 
-long long testdel(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
-    long long num = *((long long *)args->args[0]);
-    return num;
+long long test(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
+    char* str = (char* )args->args[0];
+    return strlen(str);
 }
-my_bool testdel_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+my_bool test_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
 }
 
