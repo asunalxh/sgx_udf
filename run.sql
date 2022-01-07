@@ -11,7 +11,7 @@
 -- create function getval returns string soname 'app.so';
 
 delimiter //
-create procedure run_add_data()
+create procedure run_add_data(in filedir varchar(128))
 begin
     declare i int default 0;
     declare start_time int;
@@ -25,17 +25,18 @@ begin
     set start_time = unix_timestamp(now());
 
     -- 读取需要添加的数据文件
-    set temp = readdata("/home/asunalxh/VSCode/sgx_udf/PART.csv") ;
+    set temp = readdata(filedir);
     set temp = myinit();
     set i = 0;
-    while (i < 1000) do
-        set id = getval(i,0);
-        set val = getval(i,1);
-        set encode = myinsert(id,val);
+    while (i < 2000)
+        do
+            set id = getval(i, 0);
+            set val = getval(i, 1);
+            set encode = myinsert(id, val);
 
-        insert into Ciphertext values(id,encode);
+            insert into Ciphertext values (id, encode);
 
-        set i = i + 1;
+            set i = i + 1;
         end while;
 
     set end_time = unix_timestamp(now());
