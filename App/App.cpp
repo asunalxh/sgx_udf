@@ -51,10 +51,14 @@
 #include "Base64.h"
 #include "Util.h"
 
+// mysearch结果的最长结果（字节）
+#define RESULT_MAX_LENGTH 8192
+
 string encode_key;
 int eid = 1;
 char *keyfilename = "keyfile.txt";
 char *statefilename = "statefilterfile.txt";
+long long anscount = 0;
 
 unordered_map<string, string> M;
 vector<string> ansList;
@@ -66,8 +70,11 @@ extern "C"
     my_bool myinit_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     char *myinsert(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+
     char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    void mysearch_deinit(UDF_INIT *initid);
+
     char* mydel(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool mydel_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
@@ -76,16 +83,37 @@ extern "C"
     char* getval(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
-    long long test(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
-    my_bool test_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    long long mycount(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
+    my_bool mycount_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+
+
+    char* stringtest(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
+    my_bool stringtest_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
+    void stringtest_deinit(UDF_INIT * initid);
+
 }
 
-long long test(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
-    char* str = (char* )args->args[0];
-    return strlen(str);
+char* stringtest(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
+
+    long long mysize = *((long long *)args->args[0]);
+    string ans;
+    for(int i = 0 ;i < mysize; i++){
+        char x = 'a' + i % 26;
+        ans += x;
+    }
+
+    strcpy(initid->ptr,ans.c_str());
+    *length = ans.length();
+
+    return initid->ptr;
 }
-my_bool test_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+my_bool stringtest_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    initid->ptr = new char[8192];
     return 0;
+}
+
+void stringtest_deinit(UDF_INIT * initid){
+    delete[]  initid->ptr;
 }
 
 
@@ -263,8 +291,9 @@ void ocall_search(void *w_u_arr_pointer, void *w_id_arr_pointer, size_t count, s
     {
         cout << w_u_arr[i].content << ' ' << w_id_arr[i].content << endl;
         string id = Dec(w_id_arr[i].content, M[w_u_arr[i].content]);
-        cout << "result " << id << endl;
+        // cout << "result " << id << endl;
         ansList.push_back(id);
+        anscount ++;
     }
 }
 
@@ -488,6 +517,9 @@ string insertData(char *id, char *P_BRAND)
 
 void searchData(char* id)
 {
+
+    ansList.clear();
+    anscount = 0;
     /* Initialize the enclave */
     sgx_enclave_id_t eid_unseal = eid++;
     initialize_enclave(ENCLAVE_FILENAME, &eid_unseal);
@@ -665,19 +697,25 @@ my_bool myinsert_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 }
 
 char* mysearch(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error){
-    ansList.clear();
     char* P_BRAND = (char*) args->args[0];
     searchData(P_BRAND);
     string ans="";
     for(string x : ansList){
         ans = ans + " " + x;
     }
-    strcpy(result,ans.c_str());
+
+    strcpy(initid->ptr,ans.c_str());
     *length = ans.length();
-    return result;
+
+    return initid->ptr;
 }
 my_bool mysearch_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    initid->ptr = new char[RESULT_MAX_LENGTH];
     return 0;
+}
+
+void mysearch_deinit(UDF_INIT *initid){
+    delete[] initid->ptr;
 }
 
 
@@ -724,6 +762,15 @@ my_bool getval_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
     return 0;
 }
 
+long long mycount(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error){
+    char* str = (char* )args->args[0];
+    searchData(str);
+    return anscount;
+}
+my_bool mycount_init(UDF_INIT *initid, UDF_ARGS *args, char *message){
+    return 0;
+}
+
 
 int SGX_CDECL
 main(int argc, char *argv[])
@@ -753,6 +800,7 @@ main(int argc, char *argv[])
         insertData(id,val);
     }
 }
+
 
 //sudo cp app.so /opt/lampp/lib/mysql/plugin/
 //sudo cp enclave.signed.so /usr/lib
