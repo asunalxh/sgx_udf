@@ -86,7 +86,6 @@ extern "C"
     long long mycount(UDF_INIT *initid, UDF_ARGS *args,char *is_null, char *error);
     my_bool mycount_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
 
-
     char* stringtest(UDF_INIT *initid, UDF_ARGS *args,char* result,ulong* length ,char *is_null, char *error);
     my_bool stringtest_init(UDF_INIT *initid, UDF_ARGS *args, char *message);
     void stringtest_deinit(UDF_INIT * initid);
