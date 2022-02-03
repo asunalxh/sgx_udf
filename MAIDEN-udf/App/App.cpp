@@ -51,7 +51,6 @@
 #include "Base64.h"
 #include "Util.h"
 
-// mysearch结果的最长结果（字节）
 #define RESULT_MAX_LENGTH 8192
 
 string encode_key;
