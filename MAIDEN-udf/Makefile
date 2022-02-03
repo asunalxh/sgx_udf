@@ -36,6 +36,9 @@ SGX_MODE ?= SIM
 SGX_ARCH ?= x64
 SGX_DEBUG ?= 1
 
+MYSQL_INCLUDE ?= /opt/lampp/include/server
+MYSQL_LIB ?= /opt/lampp/lib
+
 App_Name := app.so
 My_Link_Flags := -shared
 
@@ -86,7 +89,7 @@ endif
 
 App_Cpp_Files := $(wildcard App/*.cpp) $(wildcard App/Edger8rSyntax/*.cpp) $(wildcard App/TrustedLibrary/*.cpp)
 #App_Cpp_Files := App/App.cpp $(wildcard App/Edger8rSyntax/*.cpp) $(wildcard App/TrustedLibrary/*.cpp)
-App_Include_Paths := -IInclude -IApp -I$(SGX_SDK)/include -I/opt/lampp/include/server
+App_Include_Paths := -IInclude -IApp -I$(SGX_SDK)/include -I$(MYSQL_INCLUDE)
 
 App_C_Flags := -fPIC -Wno-attributes $(App_Include_Paths)
 
@@ -224,7 +227,7 @@ App/%.o: App/%.cpp
 	@echo "CXX  <=  $<"
 
 $(App_Name): App/Enclave_u.o $(App_Cpp_Objects)
-	@$(CXX) $(My_Link_Flags) $^ -o $@ $(App_Link_Flags) -L/opt/lampp/lib -lmysqlclient
+	@$(CXX) $(My_Link_Flags) $^ -o $@ $(App_Link_Flags) -L$(MYSQL_LIB) -lmysqlclient
 	@echo "LINK =>  $@"
 
 .config_$(Build_Mode)_$(SGX_ARCH):
